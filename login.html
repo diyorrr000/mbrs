@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kirish - MBRS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-header">
+            <i class="fas fa-chart-network"></i>
+            <h1>MBRS Tizimiga Xush Kelibsiz</h1>
+            <p>Iltimos, rol tanlang va kirish kalitini kiriting</p>
+        </div>
+
+        <div class="login-form">
+            <div class="role-selector">
+                <div class="role-card active" data-role="admin">
+                    <i class="fas fa-crown"></i>
+                    <h3>Admin (Markaz)</h3>
+                    <p>Barcha filiallarni ko'rish, hisobotlar, tahlil</p>
+                </div>
+                <div class="role-card" data-role="branch">
+                    <i class="fas fa-store"></i>
+                    <h3>Filial Menejeri</h3>
+                    <p>Faqat o'z filiali, ma'lumot kiritish</p>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="accessKey"><i class="fas fa-key"></i> Kirish Kaliti</label>
+                <input type="password" id="accessKey" placeholder="123456 (demo)" value="123456">
+            </div>
+
+            <div class="input-group">
+                <label for="branchSelect"><i class="fas fa-sitemap"></i> Filial (agar menejer)</label>
+                <select id="branchSelect">
+                    <option value="1">Toshkent Filiali</option>
+                    <option value="2">Samarqand Filiali</option>
+                    <option value="3">Buxoro Filiali</option>
+                </select>
+            </div>
+
+            <button id="loginBtn" class="btn btn-large btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Tizimga Kirish
+            </button>
+
+            <div class="login-info">
+                <p><strong>Demo ma'lumot:</strong> Kalit - <code>123456</code></p>
+                <p>Admin rolida barcha ma'lumotlarni ko'rasiz</p>
+                <p><a href="index.html"><i class="fas fa-home"></i> Bosh sahifaga qaytish</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hisobotlar - MBRS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .report-controls {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .report-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .report-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+        
+        .report-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+        }
+        
+        .report-card.completed {
+            border-left-color: #27ae60;
+        }
+        
+        .report-card.pending {
+            border-left-color: #f39c12;
+        }
+        
+        .report-card.failed {
+            border-left-color: #e74c3c;
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .report-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .report-type {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+        
+        .report-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 600;
+        }
+        
+        .report-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .income-stat { color: #27ae60; }
+        .expense-stat { color: #e74c3c; }
+        .profit-stat { color: #3498db; }
+        
+        .report-actions-row {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        
+        .no-reports {
+            text-align: center;
+            padding: 50px 20px;
+            color: #777;
+        }
+        
+        .no-reports i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fas fa-chart-network"></i>
+            <h2>MBRS</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="branches.html"><i class="fas fa-sitemap"></i> Filiallar</a>
+            <a href="reports.html" class="active"><i class="fas fa-file-alt"></i> Hisobotlar</a>
+            <a href="analytics.html"><i class="fas fa-chart-line"></i> Tahlillar</a>
+            <a href="settings.html"><i class="fas fa-cog"></i> Sozlamalar</a>
+        </nav>
+        <div class="user-info">
+            <div class="user-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="user-details">
+                <strong id="currentUser">Admin</strong>
+                <small id="currentRole">Markaz Administrator</small>
+                <button id="logoutBtn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Chiqish</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <header class="content-header">
+            <h1><i class="fas fa-file-alt"></i> Hisobotlar</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="generateQuickReport()">
+                    <i class="fas fa-bolt"></i> Tezkor Hisobot
+                </button>
+            </div>
+        </header>
+
+        <!-- Hisobot parametrlari -->
+        <section class="report-controls">
+            <h3><i class="fas fa-sliders-h"></i> Hisobot Parametrlari</h3>
+            <form id="reportForm" class="report-form">
+                <div class="input-group">
+                    <label for="reportType">Hisobot Turi</label>
+                    <select id="reportType">
+                        <option value="daily">Kunlik Hisobot</option>
+                        <option value="weekly">Haftalik Hisobot</option>
+                        <option value="monthly">Oylik Hisobot</option>
+                        <option value="quarterly">Choraklik Hisobot</option>
+                        <option value="yearly">Yillik Hisobot</option>
+                        <option value="custom">Maxsus Davr</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="branchSelect">Filial</label>
+                    <select id="branchSelect">
+                        <option value="all">Barcha Filiallar</option>
+                        <option value="1">Toshkent Filiali</option>
+                        <option value="2">Samarqand Filiali</option>
+                        <option value="3">Buxoro Filiali</option>
+                        <option value="4">Andijon Filiali</option>
+                        <option value="5">Namangan Filiali</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="startDate">Boshlanish Sanasi</label>
+                    <input type="date" id="startDate" value="2023-11-01">
+                </div>
+                
+                <div class="input-group">
+                    <label for="endDate">Tugash Sanasi</label>
+                    <input type="date" id="endDate" value="2023-11-10">
+                </div>
+                
+                <div class="input-group">
+                    <label for="reportFormat">Format</label>
+                    <select id="reportFormat">
+                        <option value="summary">Xulosa</option>
+                        <option value="detailed">Batafsil</option>
+                        <option value="financial">Moliyaviy</option>
+                    </select>
+                </div>
+            </form>
+            
+            <div class="report-actions">
+                <button class="btn btn-secondary" onclick="clearReportForm()">
+                    <i class="fas fa-times"></i> Tozalash
+                </button>
+                <button class="btn btn-primary" onclick="generateCustomReport()">
+                    <i class="fas fa-play"></i> Hisobot Yaratish
+                </button>
+                <button class="btn btn-success" onclick="exportReport()">
+                    <i class="fas fa-download"></i> Yuklab Olish
+                </button>
+            </div>
+        </section>
+
+        <!-- Oldingi hisobotlar -->
+        <section class="reports-history">
+            <div class="card">
+                <div class="table-header">
+                    <h3><i class="fas fa-history"></i> Oldingi Hisobotlar</h3>
+                    <div class="search-box">
+                        <input type="text" id="reportSearch" placeholder="Hisobot boʻyicha qidirish...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                
+                <div id="reportsList">
+                    <!-- Hisobotlar ro'yxati -->
+                    <div class="report-card completed">
+                        <div class="report-header">
+                            <div class="report-title">Noyabr 2023 Moliyaviy Hisobot</div>
+                            <span class="report-type">Oylik</span>
+                        </div>
+                        
+                        <div class="report-info">
+                            <div>
+                                <div class="info-label">Davr</div>
+                                <div class="info-value">01.11.2023 - 10.11.2023</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Yaratilgan</div>
+                                <div class="info-value">10.11.2023, 14:30</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Filiallar</div>
+                                <div class="info-value">Barcha (5 ta)</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Status</div>
+                                <div class="info-value" style="color: #27ae60;">
+                                    <i class="fas fa-check-circle"></i> Tugatilgan
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="report-stats">
+                            <div class="stat-item">
+                                <div class="stat-number income-stat">75.4M</div>
+                                <small>Daromad</small>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number expense-stat">42.1M</div>
+                                <small>Xarajat</small>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number profit-stat">33.3M</div>
+                                <small>Foyda</small>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">44%</div>
+                                <small>Foyda Darajasi</small>
+                            </div>
+                        </div>
+                        
+                        <div class="report-actions-row">
+                            <button class="btn btn-sm btn-outline" onclick="viewReport(1)">
+                                <i class="fas fa-eye"></i> Ko'rish
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="downloadReport(1)">
+                                <i class="fas fa-download"></i> Yuklab Olish
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteReport(1)">
+                                <i class="fas fa-trash"></i> O'chirish
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="report-card pending">
+                        <div class="report-header">
+                            <div class="report-title">Oktyabr 2023 Daromad Tahlili</div>
+                            <span class="report-type">Oylik</span>
+                        </div>
+                        
+                        <div class="report-info">
+                            <div>
+                                <div class="info-label">Davr</div>
+                                <div class="info-value">01.10.2023 - 31.10.2023</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Yaratilgan</div>
+                                <div class="info-value">01.11.2023, 09:15</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Filiallar</div>
+                                <div class="info-value">3 ta (Faollar)</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Status</div>
+                                <div class="info-value" style="color: #f39c12;">
+                                    <i class="fas fa-clock"></i> Tayyorlanmoqda
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="report-actions-row">
+                            <button class="btn btn-sm btn-outline" disabled>
+                                <i class="fas fa-hourglass-half"></i> Kuting...
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="no-reports" id="noReports" style="display: none;">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>Hali hech qanday hisobot yaratilmagan</h3>
+                        <p>Yuqoridagi parametrlar orqali birinchi hisobotingizni yarating.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Eksport modal -->
+        <div class="modal" id="exportModal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('exportModal')">&times;</span>
+                <h2><i class="fas fa-download"></i> Hisobotni Yuklab Olish</h2>
+                
+                <div class="export-options">
+                    <div class="option-card" onclick="exportFormat('pdf')">
+                        <i class="fas fa-file-pdf" style="color: #e74c3c; font-size: 3rem;"></i>
+                        <h3>PDF Format</h3>
+                        <p>Printerga chiqarish va yuborish uchun</p>
+                    </div>
+                    
+                    <div class="option-card" onclick="exportFormat('excel')">
+                        <i class="fas fa-file-excel" style="color: #27ae60; font-size: 3rem;"></i>
+                        <h3>Excel Format</h3>
+                        <p>Ma'lumotlarni tahlil qilish uchun</p>
+                    </div>
+                    
+                    <div class="option-card" onclick="exportFormat('csv')">
+                        <i class="fas fa-file-csv" style="color: #3498db; font-size: 3rem;"></i>
+                        <h3>CSV Format</h3>
+                        <p>Boshqa tizimlarga import qilish uchun</p>
+                    </div>
+                </div>
+                
+                <div class="form-actions" style="margin-top: 30px;">
+                    <button class="btn btn-secondary" onclick="closeModal('exportModal')">
+                        Bekor qilish
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setupReportPage();
+        });
+        
+        function setupReportPage() {
+            // Sanani avtomatik to'ldirish
+            const today = new Date();
+            const lastWeek = new Date();
+            lastWeek.setDate(today.getDate() - 7);
+            
+            document.getElementById('endDate').value = today.toISOString().split('T')[0];
+            document.getElementById('startDate').value = lastWeek.toISOString().split('T')[0];
+            
+            // Qidiruv funksiyasi
+            const searchInput = document.getElementById('reportSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const reportCards = document.querySelectorAll('.report-card');
+                    
+                    reportCards.forEach(card => {
+                        const reportTitle = card.querySelector('.report-title').textContent.toLowerCase();
+                        if (reportTitle.includes(searchTerm)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        }
+        
+        function generateQuickReport() {
+            const reportType = document.getElementById('reportType').value;
+            const branch = document.getElementById('branchSelect').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            alert(`Tezkor hisobot yaratilmoqda...\nTuri: ${reportType}\nFilial: ${branch}\nDavr: ${startDate} - ${endDate}`);
+            
+            // Demo hisobot qo'shish
+            const reportsList = document.getElementById('reportsList');
+            const noReports = document.getElementById('noReports');
+            
+            if (noReports.style.display === 'block') {
+                noReports.style.display = 'none';
+            }
+            
+            const newReport = document.createElement('div');
+            newReport.className = 'report-card completed';
+            newReport.innerHTML = `
+                <div class="report-header">
+                    <div class="report-title">Tezkor Hisobot - ${new Date().toLocaleDateString('uz-UZ')}</div>
+                    <span class="report-type">${getReportTypeName(reportType)}</span>
+                </div>
+                
+                <div class="report-info">
+                    <div>
+                        <div class="info-label">Davr</div>
+                        <div class="info-value">${formatDate(startDate)} - ${formatDate(endDate)}</div>
+                    </div>
+                    <div>
+                        <div class="info-label">Yaratilgan</div>
+                        <div class="info-value">${new Date().toLocaleString('uz-UZ')}</div>
+                    </div>
+                    <div>
+                        <div class="info-label">Filiallar</div>
+                        <div class="info-value">${branch === 'all' ? 'Barcha (5 ta)' : 'Tanlangan filial'}</div>
+                    </div>
+                    <div>
+                        <div class="info-label">Status</div>
+                        <div class="info-value" style="color: #27ae60;">
+                            <i class="fas fa-check-circle"></i> Tugatilgan
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-stats">
+                    <div class="stat-item">
+                        <div class="stat-number income-stat">${(Math.random() * 100 + 50).toFixed(1)}M</div>
+                        <small>Daromad</small>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number expense-stat">${(Math.random() * 50 + 30).toFixed(1)}M</div>
+                        <small>Xarajat</small>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number profit-stat">${(Math.random() * 50 + 20).toFixed(1)}M</div>
+                        <small>Foyda</small>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${(Math.random() * 30 + 20).toFixed(0)}%</div>
+                        <small>Foyda Darajasi</small>
+                    </div>
+                </div>
+                
+                <div class="report-actions-row">
+                    <button class="btn btn-sm btn-outline" onclick="viewReport(${Date.now()})">
+                        <i class="fas fa-eye"></i> Ko'rish
+                    </button>
+                    <button class="btn btn-sm btn-primary" onclick="downloadReport(${Date.now()})">
+                        <i class="fas fa-download"></i> Yuklab Olish
+                    </button>
+                </div>
+            `;
+            
+            reportsList.insertBefore(newReport, reportsList.firstChild);
+        }
+        
+        function generateCustomReport() {
+            const reportType = document.getElementById('reportType').value;
+            const branch = document.getElementById('branchSelect').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const format = document.getElementById('reportFormat').value;
+            
+            // Hisobot ma'lumotlarini yig'ish
+            const dataManager = window.dataManager || new DataManager();
+            const transactions = branch === 'all' 
+                ? dataManager.getTransactions()
+                : dataManager.getTransactions(parseInt(branch));
+            
+            // Filtrlash (sana bo'yicha)
+            const filteredTransactions = transactions.filter(t => {
+                const transDate = new Date(t.date);
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                return transDate >= start && transDate <= end;
+            });
+            
+            // Hisoblash
+            const income = filteredTransactions.filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            const expense = filteredTransactions.filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            const profit = income - expense;
+            const transactionCount = filteredTransactions.length;
+            
+            // Hisobot natijasini ko'rsatish
+            const resultHTML = `
+                <h3>Hisobot Natijalari</h3>
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                        <div>
+                            <div style="font-size: 0.9rem; color: #777;">Davr:</div>
+                            <div style="font-weight: 600;">${formatDate(startDate)} - ${formatDate(endDate)}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.9rem; color: #777;">Hisobot turi:</div>
+                            <div style="font-weight: 600;">${getReportTypeName(reportType)}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.9rem; color: #777;">Daromad:</div>
+                            <div style="font-weight: 600; color: #27ae60;">${income.toLocaleString('uz-UZ')} so'm</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.9rem; color: #777;">Xarajat:</div>
+                            <div style="font-weight: 600; color: #e74c3c;">${expense.toLocaleString('uz-UZ')} so'm</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.9rem; color: #777;">Foyda:</div>
+                            <div style="font-weight: 600; color: #3498db;">${profit.toLocaleString('uz-UZ')} so'm</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.9rem; color: #777;">Tranzaksiyalar:</div>
+                            <div style="font-weight: 600;">${transactionCount} ta</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h4>Tranzaksiya tafsilotlari:</h4>
+                    <div style="max-height: 200px; overflow-y: auto; margin-top: 10px;">
+                        ${filteredTransactions.map(t => `
+                            <div style="padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
+                                <div>
+                                    <span style="color: ${t.type === 'income' ? '#27ae60' : '#e74c3c'};">${t.type === 'income' ? '+' : '-'}</span>
+                                    ${t.description}
+                                    <small style="color: #777; margin-left: 10px;">${t.date}</small>
+                                </div>
+                                <div style="font-weight: 600;">${t.amount.toLocaleString('uz-UZ')} so'm</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // Modal yoki yangi oynada natijani ko'rsatish
+            alert(`Hisobot yaratildi!\n\nDaromad: ${income.toLocaleString()} so'm\nXarajat: ${expense.toLocaleString()} so'm\nFoyda: ${profit.toLocaleString()} so'm\n\nBatafsil ma'lumot konsolga chiqarildi.`);
+            
+            // Console'ga ma'lumotlar
+            console.log('=== HISOBOT NATIJALARI ===');
+            console.log('Davr:', startDate, '-', endDate);
+            console.log('Turi:', reportType);
+            console.log('Daromad:', income);
+            console.log('Xarajat:', expense);
+            console.log('Foyda:', profit);
+            console.log('Tranzaksiyalar:', filteredTransactions);
+        }
+        
+        function exportReport() {
+            document.getElementById('exportModal').style.display = 'flex';
+        }
+        
+        function exportFormat(format) {
+            alert(`Hisobot ${format.toUpperCase()} formatida yuklab olindi! (demo)`);
+            closeModal('exportModal');
+        }
+        
+        function clearReportForm() {
+            document.getElementById('reportForm').reset();
+            const today = new Date();
+            const lastWeek = new Date();
+            lastWeek.setDate(today.getDate() - 7);
+            
+            document.getElementById('endDate').value = today.toISOString().split('T')[0];
+            document.getElementById('startDate').value = lastWeek.toISOString().split('T')[0];
+        }
+        
+        function viewReport(reportId) {
+            alert(`Hisobot ID: ${reportId} ko'rish rejimi (demo)`);
+        }
+        
+        function downloadReport(reportId) {
+            alert(`Hisobot ID: ${reportId} yuklab olindi (demo)`);
+        }
+        
+        function deleteReport(reportId) {
+            if (confirm('Ushbu hisobotni oʻchirishni istaysizmi?')) {
+                alert(`Hisobot ID: ${reportId} oʻchirildi (demo)`);
+            }
+        }
+        
+        function getReportTypeName(type) {
+            const types = {
+                'daily': 'Kunlik',
+                'weekly': 'Haftalik',
+                'monthly': 'Oylik',
+                'quarterly': 'Choraklik',
+                'yearly': 'Yillik',
+                'custom': 'Maxsus'
+            };
+            return types[type] || type;
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('uz-UZ');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+    </script>
+</body>
+</html>

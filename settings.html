@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sozlamalar - MBRS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .settings-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+        }
+        
+        .settings-sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+        
+        .settings-nav {
+            list-style: none;
+        }
+        
+        .settings-nav li {
+            margin-bottom: 5px;
+        }
+        
+        .settings-nav a {
+            display: block;
+            padding: 12px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-nav a:hover,
+        .settings-nav a.active {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .settings-nav a i {
+            width: 20px;
+            margin-right: 10px;
+        }
+        
+        .settings-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .settings-section {
+            display: none;
+        }
+        
+        .settings-section.active {
+            display: block;
+        }
+        
+        .settings-section h2 {
+            margin-bottom: 25px;
+            color: #2c3e50;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .setting-group {
+            margin-bottom: 30px;
+        }
+        
+        .setting-group h3 {
+            margin-bottom: 15px;
+            color: #3498db;
+            font-size: 1.1rem;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .setting-info {
+            flex: 1;
+        }
+        
+        .setting-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .setting-description {
+            font-size: 0.9rem;
+            color: #777;
+        }
+        
+        .setting-control {
+            margin-left: 20px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+        }
+        
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .slider.round {
+            border-radius: 34px;
+        }
+        
+        .slider.round:before {
+            border-radius: 50%;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+        
+        .profile-info h2 {
+            margin-bottom: 5px;
+            border: none;
+            padding: 0;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .danger-zone {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 40px;
+        }
+        
+        .danger-zone h3 {
+            color: #721c24;
+            margin-bottom: 15px;
+        }
+        
+        .danger-zone p {
+            color: #721c24;
+            margin-bottom: 20px;
+        }
+        
+        .system-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .info-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .info-card .label {
+            font-size: 0.9rem;
+            color: #777;
+        }
+        
+        .backup-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .backup-card {
+            text-align: center;
+            padding: 25px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .backup-card:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+        
+        .backup-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .settings-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-sidebar {
+                display: flex;
+                overflow-x: auto;
+                padding: 10px;
+            }
+            
+            .settings-nav {
+                display: flex;
+                gap: 10px;
+            }
+            
+            .settings-nav a {
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body class="dashboard">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fas fa-chart-network"></i>
+            <h2>MBRS</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="branches.html"><i class="fas fa-sitemap"></i> Filiallar</a>
+            <a href="reports.html"><i class="fas fa-file-alt"></i> Hisobotlar</a>
+            <a href="analytics.html"><i class="fas fa-chart-line"></i> Tahlillar</a>
+            <a href="settings.html" class="active"><i class="fas fa-cog"></i> Sozlamalar</a>
+        </nav>
+        <div class="user-info">
+            <div class="user-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="user-details">
+                <strong id="currentUser">Admin</strong>
+                <small id="currentRole">Markaz Administrator</small>
+                <button id="logoutBtn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Chiqish</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <header class="content-header">
+            <h1><i class="fas fa-cog"></i> Sozlamalar</h1>
+            <div class="header-actions">
+                <button class="btn btn-success" onclick="saveSettings()">
+                    <i class="fas fa-save"></i> Saqlash
+                </button>
+            </div>
+        </header>
+
+        <div class="settings-container">
+            <!-- Settings Sidebar -->
+            <div class="settings-sidebar">
+                <ul class="settings-nav">
+                    <li><a href="#" class="active" onclick="showSection('profile')"><i class="fas fa-user"></i> Profil</a></li>
+                    <li><a href="#" onclick="showSection('general')"><i class="fas fa-sliders-h"></i> Umumiy Sozlamalar</a></li>
+                    <li><a href="#" onclick="showSection('notifications')"><i class="fas fa-bell"></i> Bildirishnomalar</a></li>
+                    <li><a href="#" onclick="showSection('security')"><i class="fas fa-shield-alt"></i> Xavfsizlik</a></li>
+                    <li><a href="#" onclick="showSection('system')"><i class="fas fa-server"></i> Tizim Ma'lumotlari</a></li>
+                    <li><a href="#" onclick="showSection('backup')"><i class="fas fa-database"></i> Zaxira Nusxalash</a></li>
+                </ul>
+            </div>
+
+            <!-- Settings Content -->
+            <div class="settings-content">
+                <!-- Profil Section -->
+                <div id="profileSection" class="settings-section active">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="profile-info">
+                            <h2>Administrator Profili</h2>
+                            <p>Markaz Administrator • admin@mbrs.uz • Oxirgi faollik: Bugun, 14:30</p>
+                        </div>
+                    </div>
+
+                    <form id="profileForm">
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label for="fullName">Toʻliq Ism</label>
+                                <input type="text" id="fullName" value="Admin Adminov" required>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" value="admin@mbrs.uz" required>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="phone">Telefon</label>
+                                <input type="tel" id="phone" value="+998901234567">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="position">Lavozim</label>
+                                <input type="text" id="position" value="Markaz Administrator">
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="bio">Qisqacha maʼlumot</label>
+                            <textarea id="bio" rows="3" placeholder="Oʻzingiz haqingizda qisqacha...">Markaz administratori, tizimni boshqarish va monitoring qilish.</textarea>
+                        </div>
+                        
+                        <div class="form-actions" style="margin-top: 30px;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Profilni Yangilash
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="danger-zone">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Xavfli Amallar</h3>
+                        <p>Profilni oʻchirish yoki qayta tiklash. Bu amalni bajarganingizdan soʻng, barcha maʼlumotlar yoʻqoladi.</p>
+                        <button class="btn btn-danger" onclick="deleteAccount()">
+                            <i class="fas fa-trash"></i> Akkauntni Oʻchirish
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Umumiy Sozlamalar -->
+                <div id="generalSection" class="settings-section">
+                    <h2><i class="fas fa-sliders-h"></i> Umumiy Sozlamalar</h2>
+                    
+                    <div class="setting-group">
+                        <h3>Tizim Koʻrinishi</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Temani oʻzgartirish</div>
+                                <div class="setting-description">Tizim rang sxemasini oʻzgartirish</div>
+                            </div>
+                            <div class="setting-control">
+                                <select id="themeSelect">
+                                    <option value="light">Yorqin</option>
+                                    <option value="dark">Qorongʻu</option>
+                                    <option value="auto">Avtomatik</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Til</div>
+                                <div class="setting-description">Interfeys tili</div>
+                            </div>
+                            <div class="setting-control">
+                                <select id="languageSelect">
+                                    <option value="uz" selected>Oʻzbekcha</option>
+                                    <option value="ru">Русский</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Vaqt formati</div>
+                                <div class="setting-description">Sana va vaqt koʻrinishi</div>
+                            </div>
+                            <div class="setting-control">
+                                <select id="timeFormat">
+                                    <option value="12">12 soat (AM/PM)</option>
+                                    <option value="24" selected>24 soat</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h3>Hisobot Sozlamalari</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Avtomatik hisobotlar</div>
+                                <div class="setting-description">Kunlik hisobotlarni avtomatik yaratish</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="switch">
+                                    <input type="checkbox" id="autoReports" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Hisobot vaqti</div>
+                                <div class="setting-description">Kunlik hisobot yaratilish vaqti</div>
+                            </div>
+                            <div class="setting-control">
+                                <input type="time" id="reportTime" value="23:00">
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Bildirishnoma yuborish</div>
+                                <div class="setting-description">Hisobot tayyor boʻlganda email orqali bildirish</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="switch">
+                                    <input type="checkbox" id="reportNotifications" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h3>Valyuta va Birliklar</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Asosiy valyuta</div>
+                                <div class="setting-description">Barcha hisobotlarda ishlatiladigan valyuta</div>
+                            </div>
+                            <div class="setting-control">
+                                <select id="currency">
+                                    <option value="UZS" selected>Oʻzbek soʻmi (UZS)</option>
+                                    <option value="USD">AQSH dollari (USD)</option>
+                                    <option value="EUR">Yevro (EUR)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Yaxlitlash</div>
+                                <div class="setting-description">Raqamlarni yaxlitlash darajasi</div>
+                            </div>
+                            <div class="setting-control">
+                                <select id="rounding">
+                                    <option value="0">Butun son</option>
+                                    <option value="1" selected>1 kasr</option>
+                                    <option value="2">2 kasr</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bildirishnomalar -->
+                <div id="notificationsSection" class="settings-section">
+                    <h2><i class="fas fa-bell"></i> Bildirishnoma Sozlamalari</h2>
+                    
+                    <div class="setting-group">
+                        <h3>Bildirishnoma Turlari</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Email bildirishnomalar</div>
+                                <div class="setting-description">Barcha xabarlarni email orqali olish</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="switch">
+                                    <input type="checkbox" id="emailNotifications" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Push bildirishnomalar</div>
+                                <div class="setting-description">Veb-brauzer orqali bildirishnomalar</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="switch">
+                                    <input type="checkbox" id="pushNotifications" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">SMS bildirishnomalar</div>
+                                <div class="setting-description">Muhim voqealar haqida SMS</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="switch">
+                                    <input type="checkbox" id="smsNotifications">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h3>Bildirishnomalar Sozlamalari</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Yangiliklar</div>
+                                <div class="setting-description">Tizim yangiliklari va xabarlari</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="switch">
+                                    <input type="checkbox" id="newsNotifications" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Hisobotlar</div>
+                                <div class="setting-description">Yangi hisobotlar haqida bildirish</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="switch">
+                                    <input type="checkbox" id="reportNotifications2" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Xavfli holatlar</div>
+                                <div class="setting-description">Foyda pasayishi, xarajat oshishi haqida</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="switch">
+                                    <input type="checkbox" id="alertsNotifications" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Xavfsizlik -->
+                <div id="securitySection" class="settings-section">
+                    <h2><i class="fas fa-shield-alt"></i> Xavfsizlik Sozlamalari</h2>
+                    
+                    <div class="setting-group">
+                        <h3>Kirish Xavfsizligi</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Ikki bosqichli autentifikatsiya</div>
+                                <div class="setting-description">SMS yoki email orqali qo'shimcha himoya</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="switch">
+                                    <input type="checkbox" id="twoFactorAuth">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Avtomatik chiqish</div>
+                                <div class="setting-description">Faolsizlikdan so'ng avtomatik chiqish</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="switch">
+                                    <input type="checkbox" id="autoLogout" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Sessiya muddati</div>
+                                <div class="setting-description">Avtomatik chiqish vaqti (daqiqa)</div>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" id="sessionTimeout" value="30" min="5" max="240">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h3>Parolni O'zgartirish</h3>
+                        
+                        <form id="passwordForm">
+                            <div class="input-group">
+                                <label for="currentPassword">Joriy Parol</label>
+                                <input type="password" id="currentPassword" placeholder="Joriy parolni kiriting">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="newPassword">Yangi Parol</label>
+                                <input type="password" id="newPassword" placeholder="Yangi parol (kamida 8 belgi)">
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="confirmPassword">Yangi Parolni Tasdiqlash</label>
+                                <input type="password" id="confirmPassword" placeholder="Yangi parolni qayta kiriting">
+                            </div>
+                            
+                            <div class="form-actions" style="margin-top: 20px;">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-key"></i> Parolni Yangilash
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h3>Faollik Tarixi</h3>
+                        
+                        <div class="activity-log">
+                            <div class="activity-item">
+                                <div class="activity-time">Bugun, 14:30</div>
+                                <div class="activity-desc">Tizimga kirish (Toshkent, 192.168.1.1)</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-time">Bugun, 10:15</div>
+                                <div class="activity-desc">Hisobot yaratildi (Oylik moliyaviy)</div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-time">Kecha, 18:45</div>
+                                <div class="activity-desc">Parol o'zgartirildi</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tizim Ma'lumotlari -->
+                <div id="systemSection" class="settings-section">
+                    <h2><i class="fas fa-server"></i> Tizim Ma'lumotlari</h2>
+                    
+                    <div class="system-info">
+                        <div class="info-card">
+                            <div class="value">v1.0.0</div>
+                            <div class="label">Tizim Versiyasi</div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="value">2023</div>
+                            <div class="label">Chiqarilgan Yili</div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="value">Demo</div>
+                            <div class="label">Litsenziya</div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="value">5</div>
+                            <div class="label">Faol Foydalanuvchilar</div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group" style="margin-top: 40px;">
+                        <h3>Tizim Holati</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Ma'lumotlar Bazasi</div>
+                                <div class="setting-description">LocalStorage - 15.2 KB foydalanilgan</div>
+                            </div>
+                            <div class="setting-control">
+                                <span class="status-active" style="padding: 5px 10px;">Faol</span>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Server Holati</div>
+                                <div class="setting-description">Frontend Demo rejimi</div>
+                            </div>
+                            <div class="setting-control">
+                                <span class="status-active" style="padding: 5px 10px;">Ishlayapti</span>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">So'nggi yangilanish</div>
+                                <div class="setting-description">Oxirgi marta yangilangan vaqt</div>
+                            </div>
+                            <div class="setting-control">
+                                <span>2023-11-10</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h3>Tizimni Yangilash</h3>
+                        <p>Tizimning so'nggi versiyasini tekshirish va yangilash.</p>
+                        <button class="btn btn-primary" onclick="checkForUpdates()">
+                            <i class="fas fa-sync-alt"></i> Yangiliklarni Tekshirish
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Zaxira Nusxalash -->
+                <div id="backupSection" class="settings-section">
+                    <h2><i class="fas fa-database"></i> Zaxira Nusxalash</h2>
+                    
+                    <div class="setting-group">
+                        <h3>Avtomatik Zaxiralash</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Avtomatik zaxiralash</div>
+                                <div class="setting-description">Ma'lumotlarni avtomatik saqlash</div>
+                            </div>
+                            <div class="setting-control">
+                                <label class="switch">
+                                    <input type="checkbox" id="autoBackup" checked>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Zaxiralash chastotasi</div>
+                                <div class="setting-description">Ma'lumotlarni qayta-qayta saqlash davri</div>
+                            </div>
+                            <div class="setting-control">
+                                <select id="backupFrequency">
+                                    <option value="daily">Har kuni</option>
+                                    <option value="weekly" selected>Har hafta</option>
+                                    <option value="monthly">Har oy</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <div class="setting-title">Zaxira soni</div>
+                                <div class="setting-description">Saqlanadigan zaxira nusxalari soni</div>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" id="backupCount" value="5" min="1" max="50">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h3>Qo'lda Zaxiralash</h3>
+                        <p>Ma'lumotlarni hozirda zaxiralash yoki oldingi zaxirani tiklash.</p>
+                        
+                        <div class="backup-options">
+                            <div class="backup-card" onclick="createBackup()">
+                                <i class="fas fa-save"></i>
+                                <h3>Zaxira Yaratish</h3>
+                                <p>Ma'lumotlarni hozir saqlash</p>
+                            </div>
+                            
+                            <div class="backup-card" onclick="restoreBackup()">
+                                <i class="fas fa-history"></i>
+                                <h3>Zaxirani Tiklash</h3>
+                                <p>Oldingi holatga qaytarish</p>
+                            </div>
+                            
+                            <div class="backup-card" onclick="exportData()">
+                                <i class="fas fa-download"></i>
+                                <h3>Eksport Qilish</h3>
+                                <p>Ma'lumotlarni faylga yuklash</p>
+                            </div>
+                            
+                            <div class="backup-card" onclick="importData()">
+                                <i class="fas fa-upload"></i>
+                                <h3>Import Qilish</h3>
+                                <p>Fayldan ma'lumot yuklash</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="danger-zone">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Tizimni Tiklash</h3>
+                        <p>Barcha sozlamalarni dastlabki holatiga qaytarish. Bu amalni bajarganingizdan soʻng, barcha sozlamalar yoʻqoladi.</p>
+                        <button class="btn btn-danger" onclick="resetSystem()">
+                            <i class="fas fa-redo"></i> Tizimni Tiklash
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setupSettingsPage();
+        });
+        
+        function setupSettingsPage() {
+            // Form submit handlers
+            const profileForm = document.getElementById('profileForm');
+            if (profileForm) {
+                profileForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Profil maʼlumotlari yangilandi!');
+                });
+            }
+            
+            const passwordForm = document.getElementById('passwordForm');
+            if (passwordForm) {
+                passwordForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const newPass = document.getElementById('newPassword').value;
+                    const confirmPass = document.getElementById('confirmPassword').value;
+                    
+                    if (newPass !== confirmPass) {
+                        alert('Yangi parollar mos kelmadi!');
+                        return;
+                    }
+                    
+                    if (newPass.length < 8) {
+                        alert('Parol kamida 8 belgidan iborat boʻlishi kerak!');
+                        return;
+                    }
+                    
+                    alert('Parol muvaffaqiyatli oʻzgartirildi!');
+                    this.reset();
+                });
+            }
+        }
+        
+        function showSection(sectionId) {
+            // Barcha sectionlarni yashirish
+            const sections = document.querySelectorAll('.settings-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Faqat tanlangan sectionni koʻrsatish
+            document.getElementById(sectionId + 'Section').classList.add('active');
+            
+            // Navigationni yangilash
+            const navLinks = document.querySelectorAll('.settings-nav a');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+        }
+        
+        function saveSettings() {
+            // Barcha sozlamalarni saqlash
+            const settings = {
+                theme: document.getElementById('themeSelect').value,
+                language: document.getElementById('languageSelect').value,
+                timeFormat: document.getElementById('timeFormat').value,
+                autoReports: document.getElementById('autoReports').checked,
+                reportTime: document.getElementById('reportTime').value,
+                currency: document.getElementById('currency').value,
+                rounding: document.getElementById('rounding').value,
+                emailNotifications: document.getElementById('emailNotifications').checked,
+                pushNotifications: document.getElementById('pushNotifications').checked,
+                twoFactorAuth: document.getElementById('twoFactorAuth').checked,
+                autoLogout: document.getElementById('autoLogout').checked,
+                sessionTimeout: document.getElementById('sessionTimeout').value,
+                autoBackup: document.getElementById('autoBackup').checked,
+                backupFrequency: document.getElementById('backupFrequency').value,
+                backupCount: document.getElementById('backupCount').value
+            };
+            
+            // LocalStorage'ga saqlash
+            localStorage.setItem('mbrs_settings', JSON.stringify(settings));
+            
+            alert('Sozlamalar muvaffaqiyatli saqlandi!');
+        }
+        
+        function deleteAccount() {
+            if (confirm('Haqiqatan ham akkauntni oʻchirmoqchimisiz? Bu amalni bekor qilib boʻlmaydi!')) {
+                alert('Akkaunt oʻchirildi (demo). Haqiqiy tizimda bu serverga soʻrov yuboriladi.');
+            }
+        }
+        
+        function checkForUpdates() {
+            alert('Soʻnggi versiya tekshirilmoqda...\n\nSizda soʻnggi versiya ishlayapti: v1.0.0');
+        }
+        
+        function createBackup() {
+            const dataManager = window.dataManager || new DataManager();
+            const data = dataManager.getAllData();
+            
+            // JSON faylini yaratish va yuklab olish
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `mbrs_backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            alert('Zaxira nusxasi yaratildi va yuklab olindi!');
+        }
+        
+        function restoreBackup() {
+            alert('Zaxira nusxasini tiklash funksiyasi. Haqiqiy tizimda fayl tanlash va ma\'lumotlarni tiklash mumkin.');
+        }
+        
+        function exportData() {
+            alert('Ma\'lumotlarni eksport qilish. CSV yoki Excel formatida chiqarish mumkin.');
+        }
+        
+        function importData() {
+            alert('Ma\'lumotlarni import qilish. Fayl tanlash va ma\'lumotlarni yuklash mumkin.');
+        }
+        
+        function resetSystem() {
+            if (confirm('Tizimni dastlabki holatiga qaytarmoqchimisiz? Barcha sozlamalar va ma\'lumotlar yoʻqoladi!')) {
+                localStorage.removeItem('mbrs_data');
+                localStorage.removeItem('mbrs_settings');
+                localStorage.removeItem('mbrs_user');
+                
+                alert('Tizim tozalandi. Sahifa yangilanadi...');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>

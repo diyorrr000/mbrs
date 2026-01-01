@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MBRS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fas fa-chart-network"></i>
+            <h2>MBRS</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="branches.html"><i class="fas fa-sitemap"></i> Filiallar</a>
+            <a href="reports.html"><i class="fas fa-file-alt"></i> Hisobotlar</a>
+            <a href="analytics.html"><i class="fas fa-chart-line"></i> Tahlillar</a>
+            <a href="settings.html"><i class="fas fa-cog"></i> Sozlamalar</a>
+        </nav>
+        <div class="user-info">
+            <div class="user-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="user-details">
+                <strong id="currentUser">Admin</strong>
+                <small id="currentRole">Markaz Administrator</small>
+                <button id="logoutBtn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Chiqish</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <header class="content-header">
+            <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+            <div class="date-display">
+                <i class="fas fa-calendar-alt"></i>
+                <span id="currentDate">1 Yanvar, 2023</span>
+            </div>
+        </header>
+
+        <!-- STATISTICS CARDS -->
+        <section class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #4CAF50;">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Umumiy Daromad</h3>
+                    <p id="totalIncome">75,430,000 so'm</p>
+                    <small>O'tgan oyga nisbatan +12%</small>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #f44336;">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Umumiy Xarajat</h3>
+                    <p id="totalExpense">42,150,000 so'm</p>
+                    <small>O'tgan oyga nisbatan -3%</small>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #2196F3;">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Jami Foyda</h3>
+                    <p id="totalProfit">33,280,000 so'm</p>
+                    <small>Foyda darajasi 44%</small>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: #FF9800;">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Faol Filiallar</h3>
+                    <p id="totalBranches">5 ta</p>
+                    <small>3 tasi yuqori samarador</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- RECENT ACTIVITY & QUICK ACTIONS -->
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3><i class="fas fa-history"></i> So'nggi Faoliyat</h3>
+                <ul class="activity-list" id="recentActivity">
+                    <!-- Aktivliklar JS orqali to'ldiriladi -->
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-bolt"></i> Tezkor Amallar</h3>
+                <div class="quick-actions">
+                    <button class="btn-action" onclick="location.href='reports.html'">
+                        <i class="fas fa-file-export"></i> Hisobot Yaratish
+                    </button>
+                    <button class="btn-action" onclick="location.href='branches.html'">
+                        <i class="fas fa-plus-circle"></i> Yangi Filial
+                    </button>
+                    <button class="btn-action" onclick="generateDailyReport()">
+                        <i class="fas fa-chart-pie"></i> Kunlik Tahlil
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERFORMANCE CHART (mini) -->
+        <div class="card">
+            <h3><i class="fas fa-chart-bar"></i> Filiallar Daromadi (oxirgi 7 kun)</h3>
+            <canvas id="miniChart" height="120"></canvas>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
